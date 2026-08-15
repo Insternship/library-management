@@ -249,4 +249,7 @@ This project was built to practice:
 * Concurrency handling
 * Git branching and Pull Request workflow
 
+## 📌 Project
+
+Library Management System built as a mini project.
 
