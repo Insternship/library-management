@@ -135,23 +135,31 @@ const BookList = () => {
 
   
   const deleteBook = async (bookId) => {
-    try {
-      setError("");
+  const confirmDelete = window.confirm(
+    "Are you sure you want to delete this book?"
+  );
 
-      await axios.delete(
-        `http://localhost:5000/api/books/${bookId}`
-      );
+  if (!confirmDelete) {
+    return;
+  }
 
-      await getBooks();
+  try {
+    setError("");
 
-      alert("Book deleted successfully");
-    } catch (error) {
-      setError(
-        error.response?.data?.message ||
-          "Failed to delete book"
-      );
-    }
-  };
+    await axios.delete(
+      `http://localhost:5000/api/books/${bookId}`
+    );
+
+    await getBooks();
+
+    alert("Book deleted successfully");
+  } catch (error) {
+    setError(
+      error.response?.data?.message ||
+        "Failed to delete book"
+    );
+  }
+};
 
   
   const filteredBooks = books.filter((book) =>
