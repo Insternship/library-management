@@ -180,12 +180,18 @@ const BookList = () => {
       {error && <p>{error}</p>}
 
       
-      <input
-        type="text"
-        placeholder="Search by title..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-      />
+     <input
+  type="text"
+  placeholder="Search by title..."
+  value={search}
+  onChange={(e) => setSearch(e.target.value)}
+/>
+
+{search && (
+  <button type="button" onClick={() => setSearch("")}>
+    Clear Search
+  </button>
+)}
 
       
       <h2>Add New Book</h2>
