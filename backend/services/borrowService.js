@@ -52,21 +52,21 @@ export const returnBook = async (borrowId) => {
   }
 
   const returnDate = new Date();
-  const dueDate = new Date(borrow.dueDate);
+const dueDate = new Date(borrow.dueDate);
 
-  let lateFee = 0;
 
-  
-  if (returnDate > dueDate) {
-    const difference = returnDate - dueDate;
+returnDate.setHours(0, 0, 0, 0);
+dueDate.setHours(0, 0, 0, 0);
 
-    const lateDays = Math.ceil(
-      difference / (1000 * 60 * 60 * 24)
-    );
+let lateFee = 0;
 
-    lateFee = lateDays * borrow.lateFeePerDay;
-  }
+if (returnDate > dueDate) {
+  const difference = returnDate - dueDate;
 
+  const lateDays = difference / (1000 * 60 * 60 * 24);
+
+  lateFee = lateDays * borrow.lateFeePerDay;
+}
   
   borrow.returnedDate = returnDate;
   borrow.status = "Returned";
