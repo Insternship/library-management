@@ -1,13 +1,14 @@
 import {
   createBook,
   getAllBooks,
+  searchBooksByTitle,
   getBookById,
   updateBook,
   deleteBook,
 } from "../services/bookService.js";
 
 
-export const addBook = async (req, res) => {
+export const addBook = async (req, res, next) => {
   try {
     const book = await createBook(req.body);
 
@@ -16,53 +17,60 @@ export const addBook = async (req, res) => {
       book,
     });
   } catch (error) {
-    res.status(500).json({
-      message: error.message,
-    });
+    next(error);
   }
 };
 
 
-export const getBooks = async (req, res) => {
+export const getBooks = async (req, res, next) => {
   try {
     const books = await getAllBooks();
 
     res.status(200).json(books);
   } catch (error) {
-    res.status(500).json({
-      message: error.message,
-    });
+    next(error);
   }
 };
 
 
-export const getBook = async (req, res) => {
+export const searchBooks = async (req, res, next) => {
+  try {
+    const { title } = req.query;
+
+    const books = await searchBooksByTitle(title);
+
+    res.status(200).json(books);
+  } catch (error) {
+    next(error);
+  }
+};
+
+
+export const getBook = async (req, res, next) => {
   try {
     const book = await getBookById(req.params.id);
 
     if (!book) {
-      return res.status(404).json({
-        message: "Book not found",
-      });
+      const error = new Error("Book not found");
+      error.statusCode = 404;
+      throw error;
     }
 
     res.status(200).json(book);
   } catch (error) {
-    res.status(500).json({
-      message: error.message,
-    });
+    next(error);
   }
 };
 
 
-export const editBook = async (req, res) => {
+export const editBook = async (req, res, next) => {
   try {
     const book = await updateBook(req.params.id, req.body);
 
     if (!book) {
-      return res.status(404).json({
-        message: "Book not found",
-      });
+      const error = new Error("Book not found");
+      error.statusCode = 404;
+      throw error;
     }
 
     res.status(200).json({
@@ -70,29 +78,25 @@ export const editBook = async (req, res) => {
       book,
     });
   } catch (error) {
-    res.status(500).json({
-      message: error.message,
-    });
+    next(error);
   }
 };
 
 
-export const removeBook = async (req, res) => {
+export const removeBook = async (req, res, next) => {
   try {
     const book = await deleteBook(req.params.id);
 
     if (!book) {
-      return res.status(404).json({
-        message: "Book not found",
-      });
+      const error = new Error("Book not found");
+      error.statusCode = 404;
+      throw error;
     }
 
     res.status(200).json({
       message: "Book deleted successfully",
     });
   } catch (error) {
-    res.status(500).json({
-      message: error.message,
-    });
+    next(error);
   }
 };

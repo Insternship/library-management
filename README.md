@@ -72,58 +72,49 @@ A late fee is calculated when a book is returned after its due date.
 * MongoDB Atlas
 * npm
 
-##  Project Structure
 
 
+
+## 📁 Project Structure
+
+```text
 library-management/
-│
 ├── backend/
-│   │
 │   ├── controllers/
 │   │   ├── bookController.js
 │   │   └── borrowController.js
-│   │
 │   ├── models/
 │   │   ├── Book.js
 │   │   └── Borrow.js
-│   │
 │   ├── routes/
 │   │   ├── bookRoutes.js
 │   │   └── borrowRoutes.js
-│   │
 │   ├── services/
 │   │   ├── bookService.js
 │   │   └── borrowService.js
-│   │
 │   ├── .env
 │   ├── .gitignore
 │   ├── package.json
 │   └── server.js
 │
 ├── frontend/
-│   │
 │   ├── src/
-│   │   │
 │   │   ├── components/
 │   │   │   ├── AddBookForm.jsx
 │   │   │   ├── EditBookForm.jsx
 │   │   │   ├── BookList.jsx
 │   │   │   ├── BorrowForm.jsx
 │   │   │   └── BorrowList.jsx
-│   │   │
 │   │   ├── pages/
 │   │   │   ├── BooksPage.jsx
 │   │   │   └── BorrowDetails.jsx
-│   │   │
 │   │   ├── App.jsx
 │   │   ├── main.jsx
 │   │   └── index.css
-│   │
 │   ├── package.json
 │   └── vite.config.js
 │
 └── README.md
-
 
 ## 🌐 Pages
 

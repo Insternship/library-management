@@ -21,6 +21,18 @@ export const getAllBooks = async () => {
 };
 
 
+export const searchBooksByTitle = async (title) => {
+  const books = await Book.find({
+    title: {
+      $regex: title,
+      $options: "i",
+    },
+  });
+
+  return books;
+};
+
+
 export const getBookById = async (id) => {
   const book = await Book.findById(id);
   return book;

@@ -6,36 +6,36 @@ import {
 } from "../services/borrowService.js";
 
 
-export const borrow = async (req, res) => {
+export const borrow = async (req, res, next) => {
   try {
-    const borrowRecord = await borrowBook(req.params.bookId, req.body);
+    const borrowRecord = await borrowBook(
+      req.params.bookId,
+      req.body
+    );
 
     res.status(201).json({
       message: "Book borrowed successfully",
       borrow: borrowRecord,
     });
   } catch (error) {
-    res.status(400).json({
-      message: error.message,
-    });
+    error.statusCode = 400;
+    next(error);
   }
 };
 
 
-export const getBorrows = async (req, res) => {
+export const getBorrows = async (req, res, next) => {
   try {
     const borrows = await getAllBorrows();
 
     res.status(200).json(borrows);
   } catch (error) {
-    res.status(500).json({
-      message: error.message,
-    });
+    next(error);
   }
 };
 
 
-export const returnBorrowedBook = async (req, res) => {
+export const returnBorrowedBook = async (req, res, next) => {
   try {
     const borrow = await returnBook(req.params.borrowId);
 
@@ -44,9 +44,8 @@ export const returnBorrowedBook = async (req, res) => {
       borrow,
     });
   } catch (error) {
-    res.status(400).json({
-      message: error.message,
-    });
+    error.statusCode = 400;
+    next(error);
   }
 };
 
