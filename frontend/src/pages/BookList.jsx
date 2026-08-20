@@ -11,30 +11,28 @@ const BookList = () => {
   const [error, setError] = useState("");
   const [search, setSearch] = useState("");
 
- 
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
   const [totalCopies, setTotalCopies] = useState("");
 
-  
   const [selectedBook, setSelectedBook] = useState(null);
 
- 
   const [borrowerName, setBorrowerName] = useState("");
   const [dueDate, setDueDate] = useState("");
 
-  
   const [editingBook, setEditingBook] = useState(null);
 
   
-  const getBooks = async () => {
+  const getBooks = async (searchTitle = "") => {
     try {
       setLoading(true);
       setError("");
 
-      const response = await axios.get(
-        "http://localhost:5000/api/books"
-      );
+      const url = searchTitle
+        ? `http://localhost:5000/api/books/search?title=${searchTitle}`
+        : "http://localhost:5000/api/books";
+
+      const response = await axios.get(url);
 
       setBooks(response.data);
     } catch (error) {
@@ -44,41 +42,44 @@ const BookList = () => {
     }
   };
 
+  
   useEffect(() => {
     getBooks();
   }, []);
 
+ 
+ const addBook = async (e) => {
+  e.preventDefault();
+
+  try {
+    setError("");
+
+    await axios.post(
+      "http://localhost:5000/api/books",
+      {
+        title,
+        author,
+        totalCopies: Number(totalCopies),
+        availableCopies: Number(totalCopies),
+      }
+    );
+
+    setTitle("");
+    setAuthor("");
+    setTotalCopies("");
+
+    await getBooks();
+
+    alert("Book added successfully");
+  } catch (error) {
+    setError(
+      error.response?.data?.message ||
+      "Failed to add book"
+    );
+  }
+};
   
-  const addBook = async (e) => {
-    e.preventDefault();
 
-    try {
-      setError("");
-
-      await axios.post(
-        "http://localhost:5000/api/books",
-        {
-          title,
-          author,
-          totalCopies: Number(totalCopies),
-          availableCopies: Number(totalCopies),
-        }
-      );
-
-      setTitle("");
-      setAuthor("");
-      setTotalCopies("");
-
-      await getBooks();
-    } catch (error) {
-      setError(
-        error.response?.data?.message ||
-          "Failed to add book"
-      );
-    }
-  };
-
-  
   const borrowBook = async (e) => {
     e.preventDefault();
 
@@ -95,17 +96,15 @@ const BookList = () => {
 
       alert("Book borrowed successfully");
 
-      
       setSelectedBook(null);
       setBorrowerName("");
       setDueDate("");
 
-    
       await getBooks();
     } catch (error) {
       setError(
         error.response?.data?.message ||
-          "Failed to borrow book"
+        "Failed to borrow book"
       );
     }
   };
@@ -128,47 +127,39 @@ const BookList = () => {
     } catch (error) {
       setError(
         error.response?.data?.message ||
-          "Failed to update book"
+        "Failed to update book"
       );
     }
   };
 
   
   const deleteBook = async (bookId) => {
-  const confirmDelete = window.confirm(
-    "Are you sure you want to delete this book?"
-  );
-
-  if (!confirmDelete) {
-    return;
-  }
-
-  try {
-    setError("");
-
-    await axios.delete(
-      `http://localhost:5000/api/books/${bookId}`
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this book?"
     );
 
-    await getBooks();
+    if (!confirmDelete) {
+      return;
+    }
 
-    alert("Book deleted successfully");
-  } catch (error) {
-    setError(
-      error.response?.data?.message ||
+    try {
+      setError("");
+
+      await axios.delete(
+        `http://localhost:5000/api/books/${bookId}`
+      );
+
+      await getBooks();
+
+      alert("Book deleted successfully");
+    } catch (error) {
+      setError(
+        error.response?.data?.message ||
         "Failed to delete book"
-    );
-  }
-};
+      );
+    }
+  };
 
-  
-  const filteredBooks = books.filter((book) =>
-    book.title
-      .toLowerCase()
-      .includes(search.toLowerCase())
-  );
-
-  
   if (loading) {
     return <h2>Loading books...</h2>;
   }
@@ -179,19 +170,29 @@ const BookList = () => {
 
       {error && <p>{error}</p>}
 
-      
-     <input
-  type="text"
-  placeholder="Search by title..."
-  value={search}
-  onChange={(e) => setSearch(e.target.value)}
-/>
+     
+      <input
+        type="text"
+        placeholder="Search by title..."
+        value={search}
+        onChange={(e) => {
+          const value = e.target.value;
+          setSearch(value);
+          getBooks(value);
+        }}
+      />
 
-{search && (
-  <button type="button" onClick={() => setSearch("")}>
-    Clear Search
-  </button>
-)}
+      {search && (
+        <button
+          type="button"
+          onClick={() => {
+            setSearch("");
+            getBooks();
+          }}
+        >
+          Clear Search
+        </button>
+      )}
 
       
       <h2>Add New Book</h2>
@@ -231,12 +232,10 @@ const BookList = () => {
       <h2>Book List</h2>
 
       {books.length === 0 ? (
-        <p>No books available</p>
-      ) : filteredBooks.length === 0 ? (
         <p>No books found</p>
       ) : (
         <BookTable
-          books={filteredBooks}
+          books={books}
           onBorrow={setSelectedBook}
           onEdit={setEditingBook}
           onDelete={deleteBook}
@@ -245,26 +244,26 @@ const BookList = () => {
 
       
       {selectedBook && (
-  <div className="borrow-modal">
-    <div className="borrow-modal-content">
-      <BorrowForm
-        book={selectedBook}
-        borrowerName={borrowerName}
-        setBorrowerName={setBorrowerName}
-        dueDate={dueDate}
-        setDueDate={setDueDate}
-        onSubmit={borrowBook}
-        onCancel={() => {
-          setSelectedBook(null);
-          setBorrowerName("");
-          setDueDate("");
-        }}
-      />
-    </div>
-  </div>
-)}
+        <div className="borrow-modal">
+          <div className="borrow-modal-content">
+            <BorrowForm
+              book={selectedBook}
+              borrowerName={borrowerName}
+              setBorrowerName={setBorrowerName}
+              dueDate={dueDate}
+              setDueDate={setDueDate}
+              onSubmit={borrowBook}
+              onCancel={() => {
+                setSelectedBook(null);
+                setBorrowerName("");
+                setDueDate("");
+              }}
+            />
+          </div>
+        </div>
+      )}
 
-    
+     
       {editingBook && (
         <EditBookForm
           book={editingBook}

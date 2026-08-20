@@ -115,6 +115,7 @@ library-management/
 │   └── vite.config.js
 │
 └── README.md
+```
 
 ## 🌐 Pages
 
